@@ -1,0 +1,50 @@
+{
+  "name": "automated-timetable-system",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build",
+    "dev": "react-router dev",
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:seed": "tsx app/db/seed.server.ts",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "@react-router/node": "^8.5.1",
+    "@react-router/serve": "^8.5.1",
+    "bcryptjs": "^2.4.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "drizzle-orm": "^0.39.1",
+    "isbot": "^5.1.23",
+    "lucide-react": "^0.475.0",
+    "mysql2": "^3.12.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "react-router": "^8.5.1",
+    "recharts": "^2.15.1",
+    "tailwind-merge": "^3.0.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@react-router/dev": "^8.5.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.13.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "drizzle-kit": "^0.30.4",
+    "postcss": "^8.5.2",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vite": "^8.0.0",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}
