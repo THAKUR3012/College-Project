@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLoaderData } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
 import {
@@ -8,17 +9,24 @@ import {
   Users,
   DoorOpen,
   CheckCircle2,
+  CalendarDays,
 } from "lucide-react";
 import { requireUser } from "~/services/auth.server";
 import { db } from "~/db/index.server";
-import { timetableVersions, timetableEntries } from "~/db/schema/index";
+import { timetableVersions, timetableEntries, workingDays } from "~/db/schema/index";
 import { eq, desc } from "drizzle-orm";
 import { getFacultyWorkloadAnalytics } from "~/services/workload.server";
+import { getTodayDateString, getDayInfoFromDate, formatTime } from "~/utils/utils";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await requireUser(request);
+
+  const daysList = await db.query.workingDays.findMany({
+    where: eq(workingDays.isActive, true),
+    orderBy: (d, { asc }) => [asc(d.dayOrder)],
+  });
 
   const activeVersion =
     (await db.query.timetableVersions.findFirst({
@@ -59,11 +67,57 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const analytics = await getFacultyWorkloadAnalytics(activeVersion?.id);
 
-  return { user, activeVersion, analytics };
+  return { user, activeVersion, analytics, daysList };
 }
 
 export default function ReportsPage() {
-  const { activeVersion, analytics } = useLoaderData<typeof loader>();
+  const { activeVersion, analytics, daysList } = useLoaderData<typeof loader>();
+  const [reportDate, setReportDate] = useState<string>(getTodayDateString());
+
+  const dayInfo = getDayInfoFromDate(reportDate, daysList);
+
+  const downloadDateWiseCSV = () => {
+    if (!activeVersion || activeVersion.entries.length === 0 || !dayInfo.workingDay) return;
+
+    const dayEntries = activeVersion.entries.filter(
+      (e: any) => e.dayId === dayInfo.workingDay!.id
+    );
+
+    const headers = [
+      "Date",
+      "Day",
+      "Period",
+      "Time Range",
+      "Class Section",
+      "Subject Code",
+      "Subject Title",
+      "Assigned Faculty",
+      "Classroom",
+    ];
+
+    const rows = dayEntries.map((e: any) => [
+      `"${reportDate}"`,
+      `"${dayInfo.dayName}"`,
+      `"${e.period.name}"`,
+      `"${formatTime(e.period.startTime)} - ${formatTime(e.period.endTime)}"`,
+      `"${e.class.name}"`,
+      `"${e.subject.code}"`,
+      `"${e.subject.name}"`,
+      `"${e.faculty.fullName}"`,
+      `"${e.classroom.roomNumber}"`,
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+
+    const link = document.createElement("a");
+    link.setAttribute("href", encodeURI(csvContent));
+    link.setAttribute("download", `datewise-schedule-${reportDate}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const downloadMasterTimetableCSV = () => {
     if (!activeVersion || activeVersion.entries.length === 0) return;
@@ -196,7 +250,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Export Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="hover:border-blue-300 dark:hover:border-blue-800 transition-colors">
           <CardContent className="p-6 space-y-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
@@ -216,6 +270,41 @@ export default function ReportsPage() {
             >
               <Download className="h-3.5 w-3.5" />
               Export Master CSV
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Date-wise Daily Export Card */}
+        <Card className="hover:border-indigo-300 dark:hover:border-indigo-800 transition-colors border-indigo-200/60 dark:border-indigo-900/40">
+          <CardContent className="p-6 space-y-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
+              <CalendarDays className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 dark:text-white">Date-wise Schedule (CSV)</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Export class sessions for a specific calendar date.
+              </p>
+            </div>
+            <div className="space-y-1">
+              <input
+                type="date"
+                value={reportDate}
+                onChange={(e) => setReportDate(e.target.value)}
+                className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-semibold"
+              />
+              <span className="text-[11px] font-medium text-slate-500 block">
+                {dayInfo.formattedDate} {dayInfo.isWorkingDay ? `(${dayInfo.dayName})` : "(Off-day)"}
+              </span>
+            </div>
+            <Button
+              onClick={downloadDateWiseCSV}
+              variant="outline"
+              className="w-full gap-2 text-xs bg-indigo-50/50 hover:bg-indigo-50 text-indigo-700 dark:text-indigo-300 dark:bg-indigo-950/30"
+              disabled={!activeVersion || activeVersion.entries.length === 0 || !dayInfo.isWorkingDay}
+            >
+              <Download className="h-3.5 w-3.5" />
+              Export Date CSV
             </Button>
           </CardContent>
         </Card>

@@ -45,6 +45,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await requireUser(request);
   const url = new URL(request.url);
   const versionParam = url.searchParams.get("versionId");
+  const viewParam = url.searchParams.get("view") as "class" | "faculty" | "room" | "date" | null;
+  const dateParam = url.searchParams.get("date");
 
   const allVersions = await db.query.timetableVersions.findMany({
     orderBy: (tv, { desc }) => [desc(tv.createdAt)],
@@ -101,6 +103,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     facultyList,
     roomsList,
     subjectsList,
+    initialView: viewParam,
+    initialDate: dateParam,
   };
 }
 
@@ -171,6 +175,8 @@ export default function TimetablePage() {
     facultyList,
     roomsList,
     subjectsList,
+    initialView,
+    initialDate,
   } = useLoaderData<typeof loader>();
 
   const submit = useSubmit();
@@ -199,6 +205,7 @@ export default function TimetablePage() {
     formData.append("classroomId", data.classroomId.toString());
     formData.append("dayId", data.dayId.toString());
     formData.append("periodId", data.periodId.toString());
+    if (data.date) formData.append("date", data.date.toString());
 
     submit(formData, { method: "post" });
     return { success: true };
@@ -223,7 +230,7 @@ export default function TimetablePage() {
             Timetable Schedules
           </h2>
           <p className="text-xs text-slate-500 mt-1">
-            Interactive multi-dimensional schedule grid with class, faculty, and classroom perspectives.
+            Interactive multi-dimensional schedule grid with Date-wise, Class-wise, Faculty-wise, and Classroom perspectives.
           </p>
         </div>
 
@@ -261,6 +268,19 @@ export default function TimetablePage() {
               {versionData.status}
             </Badge>
           )}
+
+          {/* Quick Date-wise / Weekly toggle shortcut */}
+          <Button
+            asChild
+            size="sm"
+            variant={initialView === "date" ? "default" : "outline"}
+            className="gap-1.5"
+          >
+            <Link to={initialView === "date" ? "/timetable" : "/timetable?view=date"}>
+              <Calendar className="h-3.5 w-3.5" />
+              {initialView === "date" ? "Weekly Grid" : "Date-wise Schedule"}
+            </Link>
+          </Button>
 
           {isCoordinatorOrAdmin && versionData && versionData.status !== "published" && (
             <Button
@@ -318,6 +338,8 @@ export default function TimetablePage() {
           subjects={subjectsList}
           isEditable={isCoordinatorOrAdmin}
           versionId={versionData.id}
+          initialView={initialView || undefined}
+          initialDate={initialDate || undefined}
           onManualEditSubmit={handleManualEditSubmit}
           onDeleteEntry={handleDeleteEntry}
         />

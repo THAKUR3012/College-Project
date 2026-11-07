@@ -164,9 +164,15 @@ export default function DashboardPage() {
               </Button>
             )}
             <Button asChild variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
+              <Link to="/timetable?view=date">
+                <Calendar className="h-4 w-4 mr-1.5" />
+                Date-wise Timetable
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
               <Link to="/timetable">
                 <Calendar className="h-4 w-4 mr-1.5" />
-                View Timetable Grid
+                Weekly Grid
               </Link>
             </Button>
           </div>
