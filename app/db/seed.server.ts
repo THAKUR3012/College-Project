@@ -34,19 +34,18 @@ async function seed() {
 
   // 2. Users
   console.log("Creating users...");
-  const adminPassword = await bcrypt.hash("Admin@123", 10);
-  const coordPassword = await bcrypt.hash("Coord@123", 10);
-  const facultyPassword = await bcrypt.hash("Faculty@123", 10);
+  const kesscAdminPassword = await bcrypt.hash("kes@101", 10);
+  const disabledPassword = "DISABLED_ACCOUNT";
 
-  // Clean existing users if needed or insert
+  // Single active login user (admin) and inactive faculty profiles
   await db.insert(users).values([
     {
       id: 1,
       roleId: 1,
-      username: "admin",
-      email: "admin@college.edu",
-      fullName: "Dr. A. K. Gupta (Dean Academic)",
-      passwordHash: adminPassword,
+      username: "kessc.edu.in",
+      email: "admin@kessc.edu.in",
+      fullName: "KES Shroff College Administrator",
+      passwordHash: kesscAdminPassword,
       isActive: true,
     },
     {
@@ -55,8 +54,8 @@ async function seed() {
       username: "coordinator",
       email: "coordinator@college.edu",
       fullName: "Prof. Neha Kapoor (Timetable Coordinator)",
-      passwordHash: coordPassword,
-      isActive: true,
+      passwordHash: disabledPassword,
+      isActive: false,
     },
     {
       id: 3,
@@ -64,8 +63,8 @@ async function seed() {
       username: "dr.sharma",
       email: "dr.sharma@college.edu",
       fullName: "Dr. Rajesh Sharma",
-      passwordHash: facultyPassword,
-      isActive: true,
+      passwordHash: disabledPassword,
+      isActive: false,
     },
     {
       id: 4,
@@ -73,8 +72,8 @@ async function seed() {
       username: "dr.anita",
       email: "dr.anita@college.edu",
       fullName: "Dr. Anita Verma",
-      passwordHash: facultyPassword,
-      isActive: true,
+      passwordHash: disabledPassword,
+      isActive: false,
     },
     {
       id: 5,
@@ -82,8 +81,8 @@ async function seed() {
       username: "prof.vikram",
       email: "prof.vikram@college.edu",
       fullName: "Prof. Vikram Malhotra",
-      passwordHash: facultyPassword,
-      isActive: true,
+      passwordHash: disabledPassword,
+      isActive: false,
     },
     {
       id: 6,
@@ -91,8 +90,8 @@ async function seed() {
       username: "prof.priya",
       email: "prof.priya@college.edu",
       fullName: "Prof. Priya Nambiar",
-      passwordHash: facultyPassword,
-      isActive: true,
+      passwordHash: disabledPassword,
+      isActive: false,
     },
     {
       id: 7,
@@ -100,8 +99,8 @@ async function seed() {
       username: "prof.rahul",
       email: "prof.rahul@college.edu",
       fullName: "Prof. Rahul Sen",
-      passwordHash: facultyPassword,
-      isActive: true,
+      passwordHash: disabledPassword,
+      isActive: false,
     },
     {
       id: 8,
@@ -109,10 +108,19 @@ async function seed() {
       username: "dr.sunita",
       email: "dr.sunita@college.edu",
       fullName: "Dr. Sunita Rao",
-      passwordHash: facultyPassword,
-      isActive: true,
+      passwordHash: disabledPassword,
+      isActive: false,
     },
-  ]).onDuplicateKeyUpdate({ target: users.id, set: { fullName: users.fullName } });
+  ]).onDuplicateKeyUpdate({
+    target: users.id,
+    set: {
+      username: users.username,
+      email: users.email,
+      fullName: users.fullName,
+      passwordHash: users.passwordHash,
+      isActive: users.isActive,
+    },
+  });
 
   // 3. Faculty details
   console.log("Creating faculty profiles...");

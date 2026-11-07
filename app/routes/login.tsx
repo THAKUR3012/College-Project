@@ -46,8 +46,8 @@ export default function LoginPage() {
   const redirectTo = searchParams.get("redirectTo") || "/dashboard";
   const isSubmitting = navigation.state === "submitting";
 
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
+  const [identifier, setIdentifier] = useState("kessc.edu.in");
+  const [password, setPassword] = useState("kes@101");
 
   const fillCredentials = (id: string, pwd: string) => {
     setIdentifier(id);
@@ -101,7 +101,7 @@ export default function LoginPage() {
                   id="identifier"
                   name="identifier"
                   type="text"
-                  placeholder="admin@college.edu"
+                  placeholder="kessc.edu.in"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   required
@@ -147,38 +147,17 @@ export default function LoginPage() {
             </Button>
           </Form>
 
-          {/* Quick Demo Credentials */}
-          <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 text-center">
-              Quick Test Accounts
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => fillCredentials("admin@college.edu", "Admin@123")}
-                className="p-2 text-center rounded-lg border border-purple-200 dark:border-purple-900/50 bg-purple-50/50 dark:bg-purple-950/30 hover:bg-purple-100/60 text-purple-700 dark:text-purple-300 transition-colors"
-              >
-                <span className="block text-[11px] font-bold">Admin</span>
-                <span className="block text-[9px] text-purple-600/70 dark:text-purple-400/70">Full Access</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fillCredentials("coordinator@college.edu", "Coord@123")}
-                className="p-2 text-center rounded-lg border border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-950/30 hover:bg-blue-100/60 text-blue-700 dark:text-blue-300 transition-colors"
-              >
-                <span className="block text-[11px] font-bold">Coordinator</span>
-                <span className="block text-[9px] text-blue-600/70 dark:text-blue-400/70">Scheduling</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fillCredentials("dr.sharma@college.edu", "Faculty@123")}
-                className="p-2 text-center rounded-lg border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/30 hover:bg-emerald-100/60 text-emerald-700 dark:text-emerald-300 transition-colors"
-              >
-                <span className="block text-[11px] font-bold">Faculty</span>
-                <span className="block text-[9px] text-emerald-600/70 dark:text-emerald-400/70">Lectures</span>
-              </button>
+          {/* Single Authorized Login Info */}
+          <div className="mt-6 pt-5 border-t border-slate-200/80 dark:border-slate-800">
+            <div className="rounded-xl bg-[#f5f8fc] dark:bg-slate-950/80 p-3.5 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+              <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                Official College Login Credentials
+              </p>
+              <div className="inline-flex flex-wrap items-center justify-center gap-2 text-xs font-mono font-medium text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
+                <span>User: <strong className="text-[#7d100b] dark:text-red-400">kessc.edu.in</strong></span>
+                <span className="text-slate-300 dark:text-slate-700">|</span>
+                <span>Pass: <strong className="text-[#7d100b] dark:text-red-400">kes@101</strong></span>
+              </div>
             </div>
           </div>
         </div>
