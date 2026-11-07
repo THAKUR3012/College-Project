@@ -757,11 +757,21 @@ export function TimetableGrid({
 
                 {/* Table Body: Entity Rows */}
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                  {displayedDateEntities.map((entity: any) => (
-                    <tr
-                      key={entity.id}
-                      className="hover:bg-slate-50/40 dark:hover:bg-slate-800/30 transition-colors"
-                    >
+                  {displayedDateEntities.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={periods.length + 1}
+                        className="p-10 text-center text-xs text-slate-500 dark:text-slate-400"
+                      >
+                        No {dateGrouping === "class" ? "classes" : dateGrouping === "faculty" ? "faculty members" : "classrooms"} added yet.
+                      </td>
+                    </tr>
+                  ) : (
+                    displayedDateEntities.map((entity: any) => (
+                      <tr
+                        key={entity.id}
+                        className="hover:bg-slate-50/40 dark:hover:bg-slate-800/30 transition-colors"
+                      >
                       {/* Entity Label Column */}
                       <td className="p-3 bg-slate-50/40 dark:bg-slate-900/40 border-r border-slate-200 dark:border-slate-800 align-middle">
                         <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">
@@ -915,7 +925,7 @@ export function TimetableGrid({
                         );
                       })}
                     </tr>
-                  ))}
+                  )))}
                 </tbody>
               </table>
             </div>
@@ -1174,6 +1184,13 @@ export function TimetableGrid({
             </div>
           </div>
 
+          {/* Prerequisite warning if entities are missing */}
+          {(classes.length === 0 || subjects.length === 0 || facultyList.length === 0 || rooms.length === 0) && (
+            <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-amber-800 dark:text-amber-300 text-xs">
+              <strong>Prerequisite notice:</strong> Before assigning timetable slots, please add at least one Class Section, Subject, Faculty Member, and Classroom.
+            </div>
+          )}
+
           {/* Class Select */}
           <div className="space-y-1.5">
             <Label htmlFor="modal-class">Class Section</Label>
@@ -1184,11 +1201,15 @@ export function TimetableGrid({
               className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
               required
             >
-              {classes.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name} ({c.studentCount} students)
-                </option>
-              ))}
+              {classes.length === 0 ? (
+                <option value="">No classes configured yet</option>
+              ) : (
+                classes.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} ({c.studentCount} students)
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
@@ -1202,11 +1223,15 @@ export function TimetableGrid({
               className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
               required
             >
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.code} - {s.name} ({s.type.toUpperCase()})
-                </option>
-              ))}
+              {subjects.length === 0 ? (
+                <option value="">No subjects configured yet</option>
+              ) : (
+                subjects.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.code} - {s.name} ({s.type.toUpperCase()})
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
@@ -1220,11 +1245,15 @@ export function TimetableGrid({
               className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
               required
             >
-              {facultyList.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.fullName}
-                </option>
-              ))}
+              {facultyList.length === 0 ? (
+                <option value="">No faculty members configured yet</option>
+              ) : (
+                facultyList.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.fullName}
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
@@ -1238,11 +1267,15 @@ export function TimetableGrid({
               className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
               required
             >
-              {rooms.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.roomNumber} ({r.roomType.toUpperCase()}, Capacity: {r.capacity})
-                </option>
-              ))}
+              {rooms.length === 0 ? (
+                <option value="">No classrooms configured yet</option>
+              ) : (
+                rooms.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.roomNumber} ({r.roomType.toUpperCase()}, Capacity: {r.capacity})
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
@@ -1255,7 +1288,17 @@ export function TimetableGrid({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting || !modalDayInfo.isWorkingDay}>
+            <Button
+              type="submit"
+              disabled={
+                isSubmitting ||
+                !modalDayInfo.isWorkingDay ||
+                classes.length === 0 ||
+                subjects.length === 0 ||
+                facultyList.length === 0 ||
+                rooms.length === 0
+              }
+            >
               {isSubmitting ? "Validating & Saving..." : editingEntry ? "Update Slot" : "Assign Slot"}
             </Button>
           </div>

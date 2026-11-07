@@ -233,8 +233,15 @@ export default function RequirementsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {requirementsList.map((req) => (
-                  <tr key={req.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                {requirementsList.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="p-10 text-center text-slate-500 dark:text-slate-400 text-sm">
+                      No teaching requirements configured yet. Click &quot;Add Requirement&quot; to assign faculty and subjects to classes.
+                    </td>
+                  </tr>
+                ) : (
+                  requirementsList.map((req) => (
+                    <tr key={req.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="p-4 font-bold text-slate-900 dark:text-white">
                       <div className="flex items-center gap-2">
                         <GraduationCap className="h-4 w-4 text-blue-500" />
@@ -295,7 +302,7 @@ export default function RequirementsPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

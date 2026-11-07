@@ -255,8 +255,15 @@ export default function FacultyPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {filteredFaculty.map((fac) => (
-                  <tr key={fac.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                {filteredFaculty.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="p-10 text-center text-slate-500 dark:text-slate-400 text-sm">
+                      No faculty members added yet. Click &quot;Add Faculty Member&quot; to add instructors.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredFaculty.map((fac) => (
+                    <tr key={fac.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="p-4">
                       <div className="font-semibold text-slate-900 dark:text-white">
                         {fac.fullName}
@@ -331,7 +338,7 @@ export default function FacultyPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

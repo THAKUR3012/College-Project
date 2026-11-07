@@ -186,8 +186,15 @@ export default function ClassesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {classesList.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                {classesList.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="p-10 text-center text-slate-500 dark:text-slate-400 text-sm">
+                      No classes added yet. Click &quot;Add Class Section&quot; to create your first class.
+                    </td>
+                  </tr>
+                ) : (
+                  classesList.map((c) => (
+                    <tr key={c.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="p-4">
                       <div className="font-bold text-slate-900 dark:text-white text-base">
                         {c.name}
@@ -242,7 +249,7 @@ export default function ClassesPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

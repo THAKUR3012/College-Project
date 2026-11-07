@@ -210,8 +210,15 @@ export default function SubjectsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {subjectsList.map((s) => (
-                  <tr key={s.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                {subjectsList.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="p-10 text-center text-slate-500 dark:text-slate-400 text-sm">
+                      No subjects added yet. Click &quot;Add Subject&quot; to create your curriculum subjects.
+                    </td>
+                  </tr>
+                ) : (
+                  subjectsList.map((s) => (
+                    <tr key={s.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-2.5">
                         <div
@@ -284,7 +291,7 @@ export default function SubjectsPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>
